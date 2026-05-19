@@ -1,164 +1,258 @@
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
-import { StatCard } from "@/components/ui/StatCard";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { FILMS, EVENTS, LOANS } from "@/lib/mock-data";
-import { BookOpen, BookMarked, Star, Calendar, Bell, Clock, Film, ChevronRight, MapPin, Users } from "lucide-react";
+import {
+  BookOpen, BookMarked, Star, Calendar, Bell, Clock,
+  Film, ChevronRight, MapPin, Users, TrendingUp, ArrowRight,
+} from "lucide-react";
 
 const STUDENT = { name: "Ana Clara Mendes", course: "Cinema e Audiovisual", id: "2022001847" };
 
+const NOTIFICATIONS = [
+  { msg: "Devolução de \"Central do Brasil\" em 2 dias", type: "warning" as const, time: "Hoje" },
+  { msg: "Reserva de \"O Menino e o Mundo\" confirmada", type: "success" as const, time: "Ontem" },
+  { msg: "\"Cineclube Unifor\" começa em 3 dias — você está inscrito", type: "info" as const, time: "2 dias atrás" },
+];
+
+const NOTIF_DOT: Record<string, string> = {
+  warning: "bg-[#F6C343]",
+  success: "bg-[#2EAD68]",
+  info:    "bg-[#0066B3]",
+};
+
 export default function StudentDashboard() {
-  const activeLoans = LOANS.filter(l => l.status === "borrowed" || l.status === "late").slice(0, 2);
-  const recommendations = FILMS.filter(f => f.status === "available").slice(4, 8);
-  const upcomingEvents = EVENTS.slice(0, 2);
+  const activeLoans     = LOANS.filter(l => l.status === "borrowed" || l.status === "late").slice(0, 3);
+  const recommendations = FILMS.filter(f => f.status === "available").slice(4, 7);
+  const upcomingEvents  = EVENTS.slice(0, 3);
 
   return (
     <AppShell role="aluno" title="Dashboard" showSearch user={STUDENT}>
-      {/* Greeting */}
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-[#172033]">Olá, {STUDENT.name.split(" ")[0]}! 👋</h2>
-        <p className="text-[#667085] text-sm mt-1">Matrícula {STUDENT.id} · {STUDENT.course}</p>
+
+      {/* ── Header ── */}
+      <div className="mb-8 motion-up">
+        <p className="section-label mb-1">Bem-vindo de volta</p>
+        <h2 className="text-2xl font-bold text-[#172033]">{STUDENT.name.split(" ").slice(0, 2).join(" ")}</h2>
+        <p className="text-[#667085] text-sm mt-0.5">Matrícula {STUDENT.id} · {STUDENT.course}</p>
       </div>
 
-      {/* Stats — Bento grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard label="Empréstimos Ativos" value={2} icon={BookOpen} accent="blue" trend="+1 esta semana" trendUp />
-        <StatCard label="Reservas Pendentes" value={1} icon={BookMarked} accent="yellow" />
-        <StatCard label="Favoritos" value={8} icon={Star} accent="purple" />
-        <StatCard label="Notificações" value={3} icon={Bell} accent="red" />
-      </div>
+      {/* ── Split layout ── */}
+      <div className="split-layout -mx-4 sm:-mx-6 lg:mx-0 min-h-[calc(100vh-220px)]">
 
-      {/* Main grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Active Loans */}
-        <div className="lg:col-span-2 bg-white rounded-[18px] border border-[#E2E8F0] p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-[#172033]">Meus Empréstimos</h3>
-            <Link href="/aluno/emprestimos" className="text-sm text-[#0066B3] hover:underline flex items-center gap-1">
-              Ver todos <ChevronRight className="w-3.5 h-3.5" aria-hidden />
-            </Link>
-          </div>
-          <div className="space-y-3">
-            {activeLoans.map(loan => (
-              <div key={loan.id} className="flex items-center gap-4 p-4 rounded-[14px] bg-[#F5F7FA] border border-[#E2E8F0]">
-                <div className="w-10 h-14 bg-gradient-to-b from-[#0066B3] to-[#003A70] rounded-[8px] flex items-center justify-center flex-shrink-0">
-                  <Film className="w-5 h-5 text-white/40" aria-hidden />
+        {/* ── Main column ── */}
+        <div className="split-main px-4 sm:px-6 lg:px-0 lg:pr-6 pb-6 space-y-8">
+
+          {/* Inline stats */}
+          <div className="flex flex-wrap gap-6 motion-up stagger-1">
+            {[
+              { icon: BookOpen,   label: "Empréstimos ativos", value: activeLoans.length, accent: "text-[#0066B3]" },
+              { icon: BookMarked, label: "Reservas",           value: 1,                  accent: "text-[#F6C343]" },
+              { icon: Star,       label: "Favoritos",          value: 8,                  accent: "text-violet-500" },
+              { icon: Bell,       label: "Notificações",       value: NOTIFICATIONS.length, accent: "text-[#E7472E]" },
+            ].map(({ icon: Icon, label, value, accent }) => (
+              <div key={label} className="flex items-center gap-2.5">
+                <Icon className={`w-4 h-4 ${accent} flex-shrink-0`} aria-hidden />
+                <div>
+                  <p className="text-xs text-[#667085]">{label}</p>
+                  <p className={`text-lg font-bold leading-none mt-0.5 ${accent}`}>{value}</p>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-[#172033] text-sm truncate">{loan.film}</p>
-                  <div className="flex items-center gap-3 mt-1 text-xs text-[#667085]">
-                    <span className="flex items-center gap-1">
+              </div>
+            ))}
+          </div>
+
+          {/* ── Empréstimos ativos ── */}
+          <section aria-labelledby="loans-heading" className="motion-up stagger-2">
+            <div className="flex items-center justify-between mb-3">
+              <h3 id="loans-heading" className="font-semibold text-[#172033]">Empréstimos Ativos</h3>
+              <Link href="/aluno/emprestimos" className="text-xs text-[#0066B3] hover:underline flex items-center gap-1">
+                Ver histórico <ChevronRight className="w-3.5 h-3.5" aria-hidden />
+              </Link>
+            </div>
+
+            <div className="bg-white rounded-[14px] border border-[#E2E8F0] overflow-hidden">
+              {activeLoans.map(loan => (
+                <div key={loan.id} className="list-row">
+                  <div className="w-8 h-11 bg-gradient-to-b from-[#0066B3] to-[#003A70] rounded-[6px] flex items-center justify-center flex-shrink-0">
+                    <Film className="w-3.5 h-3.5 text-white/40" aria-hidden />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-[#172033] text-sm truncate">{loan.film}</p>
+                    <p className="text-xs text-[#667085] mt-0.5 flex items-center gap-1">
                       <Clock className="w-3 h-3" aria-hidden />
                       Devolução: {new Date(loan.due).toLocaleDateString("pt-BR")}
-                    </span>
-                    <span>{loan.copy}</span>
+                      <span className="text-[#E2E8F0] mx-1">·</span>
+                      {loan.copy}
+                    </p>
                   </div>
+                  <Badge status={loan.status} />
                 </div>
-                <Badge status={loan.status} />
-              </div>
-            ))}
-            {activeLoans.length === 0 && (
-              <div className="text-center py-8 text-[#667085]">
-                <BookOpen className="w-10 h-10 mx-auto mb-2 opacity-30" aria-hidden />
-                <p className="text-sm">Nenhum empréstimo ativo</p>
-              </div>
-            )}
-          </div>
+              ))}
+              {activeLoans.length === 0 && (
+                <div className="py-10 text-center text-[#667085]">
+                  <BookOpen className="w-8 h-8 mx-auto mb-2 opacity-25" aria-hidden />
+                  <p className="text-sm">Nenhum empréstimo ativo</p>
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* ── Recomendações ── */}
+          <section aria-labelledby="rec-heading" className="motion-up stagger-3">
+            <div className="flex items-center justify-between mb-3">
+              <h3 id="rec-heading" className="font-semibold text-[#172033]">Recomendados para Você</h3>
+              <Link href="/aluno/catalogo" className="text-xs text-[#0066B3] hover:underline flex items-center gap-1">
+                Explorar catálogo <ChevronRight className="w-3.5 h-3.5" aria-hidden />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-3 gap-3">
+              {recommendations.map((film, i) => (
+                <div
+                  key={film.id}
+                  className={`film-card group rounded-[12px] overflow-hidden bg-white border border-[#E2E8F0] motion-up stagger-${i + 4}`}
+                >
+                  <Link
+                    href={`/aluno/catalogo/${film.id}`}
+                    className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066B3]"
+                    aria-label={`Ver ${film.title}`}
+                  >
+                    <div
+                      className="relative bg-gradient-to-br from-[#003A70] to-[#0066B3] film-cover"
+                      style={{ aspectRatio: "2/3" }}
+                    >
+                      <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60">
+                        <p className="text-[9px] text-white/70 font-medium line-clamp-1">{film.title}</p>
+                      </div>
+                      <div className="film-actions absolute inset-0 bg-black/40 flex flex-col items-center justify-center gap-2 p-3">
+                        <span className="text-[10px] font-medium text-white bg-[#0066B3] px-3 py-1 rounded-[6px]">Ver detalhes</span>
+                      </div>
+                    </div>
+                    <div className="p-2">
+                      <p className="text-[10px] font-semibold text-[#172033] leading-snug line-clamp-1">{film.title}</p>
+                      <p className="text-[9px] text-[#667085]">{film.director}</p>
+                    </div>
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </section>
+
         </div>
 
-        {/* Upcoming Events */}
-        <div className="bg-white rounded-[18px] border border-[#E2E8F0] p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-[#172033]">Eventos da Semana</h3>
-            <Link href="/aluno/eventos" className="text-sm text-[#0066B3] hover:underline">
-              <ChevronRight className="w-4 h-4" aria-label="Ver todos os eventos" />
+        {/* ── Right context panel ── */}
+        <aside className="split-panel px-4 sm:px-6 py-6 space-y-8 motion-right" aria-label="Painel de contexto">
+
+          {/* Próxima devolução */}
+          {activeLoans.find(l => l.status !== "returned") && (
+            <section aria-labelledby="next-due-heading">
+              <p className="section-label mb-3" id="next-due-heading">Próxima devolução</p>
+              <div className="border-l-2 border-[#F6C343] pl-3">
+                <p className="font-semibold text-[#172033] text-sm">
+                  {activeLoans[0]?.film}
+                </p>
+                <p className="text-xs text-[#667085] mt-0.5 flex items-center gap-1">
+                  <Clock className="w-3 h-3" aria-hidden />
+                  {new Date(activeLoans[0]?.due).toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long" })}
+                </p>
+                <Link href="/aluno/emprestimos">
+                  <Button size="sm" variant="outline" className="mt-3 text-xs h-8 gap-1">
+                    Renovar <ArrowRight className="w-3 h-3" aria-hidden />
+                  </Button>
+                </Link>
+              </div>
+            </section>
+          )}
+
+          {/* Eventos */}
+          <section aria-labelledby="events-aside-heading">
+            <div className="flex items-center justify-between mb-3">
+              <p className="section-label" id="events-aside-heading">Eventos da semana</p>
+              <Link href="/aluno/eventos" className="text-xs text-[#0066B3] hover:underline">Ver todos</Link>
+            </div>
+            <div className="space-y-0 divide-y divide-[#E2E8F0]">
+              {upcomingEvents.map(event => (
+                <Link
+                  key={event.id}
+                  href={`/aluno/eventos/${event.id}`}
+                  className="flex gap-3 py-3.5 group hover:bg-[#F5F7FA] -mx-2 px-2 rounded-[8px] transition-colors"
+                >
+                  <div className="flex-shrink-0 w-9 text-center">
+                    <p className="text-sm font-bold text-[#172033] leading-none">
+                      {new Date(event.date).getDate()}
+                    </p>
+                    <p className="text-[9px] text-[#667085] uppercase mt-0.5">
+                      {new Date(event.date).toLocaleDateString("pt-BR", { month: "short" })}
+                    </p>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-[#172033] leading-snug group-hover:text-[#0066B3] transition-colors line-clamp-2">
+                      {event.title}
+                    </p>
+                    <p className="text-[10px] text-[#667085] mt-1 flex items-center gap-1">
+                      <MapPin className="w-2.5 h-2.5" aria-hidden />
+                      {event.location}
+                    </p>
+                    <p className="text-[10px] text-[#667085] mt-0.5 flex items-center gap-1">
+                      <Users className="w-2.5 h-2.5" aria-hidden />
+                      {event.slots - event.enrolled} vagas
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          {/* Notificações */}
+          <section aria-labelledby="notif-heading">
+            <div className="flex items-center justify-between mb-3">
+              <p className="section-label" id="notif-heading">Notificações</p>
+              <span className="text-[10px] font-bold text-white bg-[#E7472E] rounded-full w-4 h-4 flex items-center justify-center">
+                {NOTIFICATIONS.length}
+              </span>
+            </div>
+            <ul className="space-y-0 divide-y divide-[#E2E8F0]">
+              {NOTIFICATIONS.map(({ msg, type, time }) => (
+                <li key={msg} className="flex gap-2.5 py-3">
+                  <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 mt-1.5 ${NOTIF_DOT[type]}`} aria-hidden />
+                  <div>
+                    <p className="text-xs text-[#172033] leading-relaxed">{msg}</p>
+                    <p className="text-[10px] text-[#667085] mt-0.5">{time}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <Link href="/aluno/notificacoes" className="text-xs text-[#0066B3] hover:underline mt-3 inline-block">
+              Ver todas
             </Link>
-          </div>
-          <div className="space-y-3">
-            {upcomingEvents.map(event => (
-              <div key={event.id} className="p-3 rounded-[12px] bg-gradient-to-br from-[#003A70] to-[#0066B3] text-white">
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[10px] font-semibold bg-white/15 px-2 py-0.5 rounded-full">{event.type}</span>
-                  <span className="text-xs text-white/60">{new Date(event.date).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>
-                </div>
-                <p className="text-xs font-semibold leading-snug mb-2">{event.title}</p>
-                <div className="flex items-center gap-1 text-[10px] text-white/60">
-                  <MapPin className="w-3 h-3" aria-hidden />
-                  {event.location}
-                </div>
-                <div className="flex items-center gap-1 text-[10px] text-white/60 mt-0.5">
-                  <Users className="w-3 h-3" aria-hidden />
-                  {event.slots - event.enrolled} vagas
-                </div>
-                <Button size="sm" variant="secondary" className="w-full mt-2 text-[10px] h-7 bg-white/20 text-white border-white/20 hover:bg-white/30">
-                  Inscrever-se
-                </Button>
-              </div>
-            ))}
-          </div>
-        </div>
+          </section>
 
-        {/* Notifications */}
-        <div className="bg-white rounded-[18px] border border-[#E2E8F0] p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-[#172033]">Notificações</h3>
-            <span className="w-5 h-5 bg-[#E7472E] text-white text-[10px] font-bold rounded-full flex items-center justify-center">3</span>
-          </div>
-          <div className="space-y-2">
-            {[
-              { msg: "Devolução do filme \"Central do Brasil\" em 2 dias", type: "warning", time: "Hoje" },
-              { msg: "Sua reserva de \"O Menino e o Mundo\" foi confirmada", type: "success", time: "Ontem" },
-              { msg: "Evento \"Cineclube Unifor\" começa em 3 dias — você está inscrito", type: "info", time: "2 dias atrás" },
-            ].map(({ msg, type, time }) => (
-              <div key={msg} className={`flex gap-3 p-3 rounded-[10px] text-xs ${
-                type === "warning" ? "bg-amber-50 border border-amber-200" :
-                type === "success" ? "bg-emerald-50 border border-emerald-200" :
-                "bg-sky-50 border border-sky-200"
-              }`}>
-                <div className={`w-1.5 h-1.5 rounded-full mt-1 flex-shrink-0 ${
-                  type === "warning" ? "bg-amber-500" :
-                  type === "success" ? "bg-emerald-500" : "bg-sky-500"
-                }`} aria-hidden />
-                <div>
-                  <p className="text-[#172033] leading-relaxed">{msg}</p>
-                  <p className="text-[#667085] mt-0.5">{time}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+          {/* Quick links */}
+          <section aria-label="Ações rápidas">
+            <p className="section-label mb-3">Ações rápidas</p>
+            <div className="space-y-1">
+              {[
+                { icon: BookMarked, label: "Minhas Reservas",   href: "/aluno/reservas" },
+                { icon: Star,       label: "Favoritos",         href: "/aluno/favoritos" },
+                { icon: Calendar,   label: "Meus Eventos",      href: "/aluno/eventos" },
+                { icon: TrendingUp, label: "Explorar Catálogo", href: "/aluno/catalogo" },
+              ].map(({ icon: Icon, label, href }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="flex items-center gap-2.5 px-2 py-2 rounded-[8px] text-sm text-[#667085] hover:text-[#172033] hover:bg-[#F5F7FA] transition-colors group"
+                >
+                  <Icon className="w-4 h-4 group-hover:text-[#0066B3] transition-colors" aria-hidden />
+                  {label}
+                  <ChevronRight className="w-3.5 h-3.5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden />
+                </Link>
+              ))}
+            </div>
+          </section>
 
-        {/* Recommendations */}
-        <div className="lg:col-span-2 bg-white rounded-[18px] border border-[#E2E8F0] p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-[#172033]">Recomendações para Você</h3>
-            <Link href="/aluno/catalogo" className="text-sm text-[#0066B3] hover:underline flex items-center gap-1">
-              Ver catálogo <ChevronRight className="w-3.5 h-3.5" aria-hidden />
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {recommendations.map(film => (
-              <div key={film.id} className="film-card rounded-[12px] overflow-hidden bg-[#F5F7FA] border border-[#E2E8F0]">
-                <div className="relative bg-gradient-to-br from-[#003A70] to-[#0066B3]" style={{ aspectRatio: "2/3" }}>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 p-2">
-                    <Star className="w-8 h-8 text-white/20" aria-hidden />
-                    <p className="text-[9px] font-semibold text-white/70 text-center leading-tight">{film.title}</p>
-                  </div>
-                  <div className="film-actions absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-2 p-2">
-                    <Button size="sm" className="text-[10px] h-7 w-full">Reservar</Button>
-                    <button className="text-[10px] text-white/80 hover:text-white">Ver detalhes</button>
-                  </div>
-                </div>
-                <div className="p-2">
-                  <p className="text-[10px] font-semibold text-[#172033] leading-tight truncate">{film.title}</p>
-                  <p className="text-[9px] text-[#667085]">{film.year}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        </aside>
       </div>
+
     </AppShell>
   );
 }
