@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS films (
     status TEXT NOT NULL DEFAULT 'available',
     location TEXT,
     synopsis TEXT,
-    cast TEXT,
+    "cast" TEXT,
     subtitles TEXT,
     country TEXT,
     internal_code TEXT UNIQUE,
