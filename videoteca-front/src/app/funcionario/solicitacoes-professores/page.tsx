@@ -1,6 +1,6 @@
 "use client";
 import { AppShell } from "@/components/layout/AppShell";
-import { PROFESSOR_REQUESTS } from "@/lib/mock-data";
+const PROFESSOR_REQUESTS: { id: number; type: string; title: string; discipline: string; class: string; date: string; status: string; notes: string }[] = [];
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";

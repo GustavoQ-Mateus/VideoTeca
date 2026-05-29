@@ -5,7 +5,10 @@ import { Select } from "@/components/ui/Select";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
-import { ROOMS, FILMS } from "@/lib/mock-data";
+import type { RoomRecord, FilmRecord } from "@/lib/types";
+
+const ROOMS: RoomRecord[] = [];
+const FILMS: FilmRecord[] = [];
 import { useToast } from "@/components/providers/ToastProvider";
 
 const PROFESSOR = { name: "Carlos Melo", course: "Jornalismo" };

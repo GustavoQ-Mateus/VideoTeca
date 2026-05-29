@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Film } from "lucide-react";
-import { getFilmById } from "@/lib/mock-data";
+import { fetchFilmById } from "@/lib/api";
 import { FilmDetailView } from "@/components/catalog/FilmDetailView";
 import { Button } from "@/components/ui/Button";
 
@@ -9,7 +9,7 @@ export default async function PublicFilmDetail({ params }: { params: Promise<{ i
   const { id } = await params;
   const num = Number(id);
   if (Number.isNaN(num)) notFound();
-  const film = getFilmById(num);
+  const film = await fetchFilmById(num);
   if (!film) notFound();
 
   return (
@@ -24,9 +24,7 @@ export default async function PublicFilmDetail({ params }: { params: Promise<{ i
           </Link>
           <div className="ml-auto flex gap-2">
             <Link href="/catalogo">
-              <Button variant="ghost" size="sm">
-                Catálogo
-              </Button>
+              <Button variant="ghost" size="sm">Catálogo</Button>
             </Link>
             <Link href="/login">
               <Button size="sm">Entrar</Button>

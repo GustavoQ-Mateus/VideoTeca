@@ -1,7 +1,9 @@
 "use client";
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
-import { EVENTS } from "@/lib/mock-data";
+import type { EventRecord } from "@/lib/types";
+
+const EVENTS: EventRecord[] = [];
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 

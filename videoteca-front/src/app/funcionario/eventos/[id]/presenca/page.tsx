@@ -1,7 +1,7 @@
 "use client";
 import { useParams } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
-import { EVENT_CHECKINS } from "@/lib/mock-data";
+const EVENT_CHECKINS: { id: number; name: string; matricula: string; present: boolean }[] = [];
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Badge } from "@/components/ui/Badge";

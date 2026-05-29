@@ -4,7 +4,10 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
-import { FILMS, COURSES } from "@/lib/mock-data";
+import { COURSES } from "@/lib/constants";
+import type { FilmRecord } from "@/lib/types";
+
+const FILMS: FilmRecord[] = [];
 import { useToast } from "@/components/providers/ToastProvider";
 
 const PROFESSOR = { name: "Carlos Melo", course: "Jornalismo" };

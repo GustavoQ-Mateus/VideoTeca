@@ -3,11 +3,12 @@ import { AppShell } from "@/components/layout/AppShell";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
 import { DataTable, Column } from "@/components/ui/DataTable";
-import { LOANS } from "@/lib/mock-data";
+import type { LoanRecord } from "@/lib/types";
 
 const STAFF = { name: "Carla Nogueira", course: "Funcionária" };
+const LOANS: LoanRecord[] = [];
 
-type Row = (typeof LOANS)[0];
+type Row = LoanRecord;
 
 const columns: Column<Row>[] = [
   { key: "st", header: "Aluno", render: (r) => r.student },

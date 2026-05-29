@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { Film, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { EVENTS } from "@/lib/mock-data";
+import type { EventRecord } from "@/lib/types";
+
+const EVENTS: EventRecord[] = [];
 import { EventCard } from "@/components/ui/EventCard";
 
 const NAV_LINKS = [

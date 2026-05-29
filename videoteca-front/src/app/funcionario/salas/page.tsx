@@ -1,6 +1,8 @@
 "use client";
 import { AppShell } from "@/components/layout/AppShell";
-import { ROOMS } from "@/lib/mock-data";
+import type { RoomRecord } from "@/lib/types";
+
+const ROOMS: RoomRecord[] = [];
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";

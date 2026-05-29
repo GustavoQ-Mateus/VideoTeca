@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Button } from "@/components/ui/Button";
-import { COURSES } from "@/lib/mock-data";
+import { COURSES } from "@/lib/constants";
 
 const STUDENT = { name: "Ana Clara Mendes", course: "Cinema e Audiovisual" };
 

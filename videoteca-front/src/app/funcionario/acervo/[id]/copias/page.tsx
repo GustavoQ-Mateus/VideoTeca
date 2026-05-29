@@ -2,7 +2,9 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
-import { getFilmById } from "@/lib/mock-data";
+import type { FilmRecord } from "@/lib/types";
+
+function getFilmById(_id: number): FilmRecord | undefined { return undefined; }
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { DataTable, Column } from "@/components/ui/DataTable";

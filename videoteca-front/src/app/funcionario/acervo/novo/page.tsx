@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
-import { COURSES } from "@/lib/mock-data";
+import { COURSES } from "@/lib/constants";
 
 const STAFF = { name: "Carla Nogueira", course: "Funcionária" };
 

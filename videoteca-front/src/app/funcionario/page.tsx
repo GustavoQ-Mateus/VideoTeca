@@ -2,7 +2,11 @@ import { AppShell } from "@/components/layout/AppShell";
 import { StatCard } from "@/components/ui/StatCard";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { LOANS, EVENTS, ADMIN_STATS } from "@/lib/mock-data";
+import type { LoanRecord, EventRecord } from "@/lib/types";
+
+const LOANS: LoanRecord[] = [];
+const EVENTS: EventRecord[] = [];
+const ADMIN_STATS = { totalItems: 0, activeLoans: 0, pendingReservations: 0, lateItems: 0, occupiedRooms: 0, upcomingEvents: 0, usersWithPending: 0, mostRequested: "—" };
 import {
   Package, BookOpen, BookMarked, AlertTriangle,
   Building2, Calendar, Users, Star, Clock, Film,

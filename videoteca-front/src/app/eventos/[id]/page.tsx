@@ -2,7 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Film, MapPin, Users, Calendar, Award } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { getEventById } from "@/lib/mock-data";
+import type { EventRecord } from "@/lib/types";
+
+function getEventById(_id: number): EventRecord | undefined { return undefined; }
 
 const NAV_LINKS = [
   { label: "Catálogo", href: "/catalogo" },

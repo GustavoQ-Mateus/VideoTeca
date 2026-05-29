@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
-import { getFilmById } from "@/lib/mock-data";
+import { fetchFilmById } from "@/lib/api";
 import { FilmDetailView } from "@/components/catalog/FilmDetailView";
 
 const STUDENT = { name: "Ana Clara Mendes", course: "Cinema e Audiovisual" };
@@ -9,7 +9,7 @@ export default async function StudentFilmDetail({ params }: { params: Promise<{ 
   const { id } = await params;
   const num = Number(id);
   if (Number.isNaN(num)) notFound();
-  const film = getFilmById(num);
+  const film = await fetchFilmById(num);
   if (!film) notFound();
 
   return (

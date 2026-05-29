@@ -4,7 +4,9 @@ import { useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { FILMS } from "@/lib/mock-data";
+import type { FilmRecord } from "@/lib/types";
+
+const FILMS: FilmRecord[] = [];
 import { Search, Plus, Film, Edit, Eye, Ban, ChevronDown, Filter } from "lucide-react";
 
 const STAFF = { name: "Carla Nogueira", course: "Funcionária" };

@@ -3,7 +3,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
-import { getEventById } from "@/lib/mock-data";
+import type { EventRecord } from "@/lib/types";
+
+function getEventById(_id: number): EventRecord | undefined { return undefined; }
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { useToast } from "@/components/providers/ToastProvider";

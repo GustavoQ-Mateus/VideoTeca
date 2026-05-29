@@ -1,12 +1,12 @@
 "use client";
 import { AppShell } from "@/components/layout/AppShell";
-import { PROFESSOR_REQUESTS } from "@/lib/mock-data";
 import { Badge } from "@/components/ui/Badge";
 import { DataTable, Column } from "@/components/ui/DataTable";
 
 const PROFESSOR = { name: "Carlos Melo", course: "Jornalismo" };
 
-type Row = (typeof PROFESSOR_REQUESTS)[0];
+type Row = { id: number; type: string; title: string; discipline: string; class: string; date: string; status: string; notes: string };
+const PROFESSOR_REQUESTS: Row[] = [];
 
 const columns: Column<Row>[] = [
   { key: "t", header: "Tipo", render: (r) => (r.type === "filme" ? "Filme" : "Sala") },

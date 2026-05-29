@@ -2,7 +2,7 @@ import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { FILMS, EVENTS, LOANS } from "@/lib/mock-data";
+import type { FilmRecord, LoanRecord, EventRecord } from "@/lib/types";
 import {
   BookOpen, BookMarked, Star, Calendar, Bell, Clock,
   Film, ChevronRight, MapPin, Users, TrendingUp, ArrowRight,
@@ -22,10 +22,11 @@ const NOTIF_DOT: Record<string, string> = {
   info:    "bg-[#0066B3]",
 };
 
+const activeLoans:     LoanRecord[]  = [];
+const recommendations: FilmRecord[]  = [];
+const upcomingEvents:  EventRecord[] = [];
+
 export default function StudentDashboard() {
-  const activeLoans     = LOANS.filter(l => l.status === "borrowed" || l.status === "late").slice(0, 3);
-  const recommendations = FILMS.filter(f => f.status === "available").slice(4, 7);
-  const upcomingEvents  = EVENTS.slice(0, 3);
 
   return (
     <AppShell role="aluno" title="Dashboard" showSearch user={STUDENT}>

@@ -3,7 +3,9 @@ import { useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { LOANS } from "@/lib/mock-data";
+import type { LoanRecord } from "@/lib/types";
+
+const LOANS: LoanRecord[] = [];
 import { Search, QrCode, CheckCircle, AlertCircle, Wrench, Clock, User, Film } from "lucide-react";
 
 const STAFF = { name: "Carla Nogueira", course: "Funcionária" };

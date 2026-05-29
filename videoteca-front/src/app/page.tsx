@@ -4,7 +4,7 @@ import {
   Play, ArrowRight, MapPin, Clock, Clapperboard,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { FILMS, EVENTS } from "@/lib/mock-data";
+import type { FilmRecord, EventRecord } from "@/lib/types";
 
 const NAV_LINKS = [
   { label: "Catálogo", href: "/catalogo" },
@@ -33,8 +33,8 @@ const EVENT_COLORS: Record<string, string> = {
 };
 
 export default function LandingPage() {
-  const featuredFilms  = FILMS.filter(f => f.status === "available").slice(0, 6);
-  const upcomingEvents = EVENTS.slice(0, 3);
+  const featuredFilms:  FilmRecord[]  = [];
+  const upcomingEvents: EventRecord[] = [];
 
   return (
     <div className="min-h-screen bg-white flex flex-col">

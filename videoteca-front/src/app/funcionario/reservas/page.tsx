@@ -1,6 +1,6 @@
 "use client";
 import { AppShell } from "@/components/layout/AppShell";
-import { STAFF_RESERVATIONS } from "@/lib/mock-data";
+const STAFF_RESERVATIONS: { id: number; student: string; matricula: string; film: string; status: string; requested: string; limit: string }[] = [];
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";

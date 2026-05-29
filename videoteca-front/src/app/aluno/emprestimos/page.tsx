@@ -5,19 +5,17 @@ import { AppShell } from "@/components/layout/AppShell";
 import { Tabs } from "@/components/ui/Tabs";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { STUDENT_LOANS_SELF } from "@/lib/mock-data";
 import { Film, Clock, RefreshCw, AlertTriangle } from "lucide-react";
 import { AlertBanner } from "@/components/ui/AlertBanner";
 
 const STUDENT = { name: "Ana Clara Mendes", course: "Cinema e Audiovisual" };
 
-const HISTORY = [
-  { id: 3, film: "Cidade de Deus", borrowed: "2026-04-01", due: "2026-04-08", returned: "2026-04-07", status: "returned" as const },
-];
+const ACTIVE_LOANS: { id: number; film: string; media: string; borrowed: string; due: string; status: string; copy: string; renewable: boolean; filmId: number }[] = [];
+const HISTORY: { id: number; film: string; borrowed: string; due: string; returned: string; status: string }[] = [];
 
 export default function EmprestimosAlunoPage() {
   const [tab, setTab] = useState("ativos");
-  const late = STUDENT_LOANS_SELF.filter((l) => l.status === "late");
+  const late = ACTIVE_LOANS.filter((l) => l.status === "late");
 
   return (
     <AppShell role="aluno" title="Meus Empréstimos" user={STUDENT}>
@@ -38,7 +36,7 @@ export default function EmprestimosAlunoPage() {
 
       {tab === "ativos" && (
         <div className="space-y-4">
-          {STUDENT_LOANS_SELF.map((l) => (
+          {ACTIVE_LOANS.map((l) => (
             <div
               key={l.id}
               className={`rounded-[18px] border p-5 flex flex-col sm:flex-row gap-4 ${

@@ -1,6 +1,6 @@
 "use client";
 import { AppShell } from "@/components/layout/AppShell";
-import { NOTIFICATIONS } from "@/lib/mock-data";
+const NOTIFICATIONS: { id: number; type: string; title: string; body: string; time: string; read: boolean }[] = [];
 import { Bell, Check } from "lucide-react";
 
 const STUDENT = { name: "Ana Clara Mendes", course: "Cinema e Audiovisual" };

@@ -2,8 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Clock, Film, Globe, MapPin, Subtitles, Users, Heart, BookOpen, Calendar } from "lucide-react";
-import type { FilmRecord } from "@/lib/mock-data";
-import { EVENTS, FILMS } from "@/lib/mock-data";
+import type { FilmRecord, EventRecord } from "@/lib/types";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
@@ -16,18 +15,16 @@ interface FilmDetailViewProps {
   mode: "public" | "aluno";
   backHref: string;
   breadcrumbItems: { label: string; href?: string }[];
+  relatedFilms?: FilmRecord[];
+  relatedEvents?: EventRecord[];
 }
 
-export function FilmDetailView({ film, mode, backHref, breadcrumbItems }: FilmDetailViewProps) {
+export function FilmDetailView({ film, mode, backHref, breadcrumbItems, relatedFilms = [], relatedEvents = [] }: FilmDetailViewProps) {
   const [avMode, setAvMode] = useState(false);
   const [reserving, setReserving] = useState(false);
   const { toast } = useToast();
 
-  const related = (film.relatedIds ?? [])
-    .map((id) => FILMS.find((f) => f.id === id))
-    .filter(Boolean) as FilmRecord[];
-
-  const relatedEvents = EVENTS.filter((e) => e.film === film.title);
+  const related = relatedFilms;
 
   const base = avMode ? "bg-[var(--av-bg)] text-white min-h-[calc(100vh-4rem)]" : "bg-[#F5F7FA]";
   const card = avMode ? "bg-[var(--av-card)] border-[var(--av-muted)]/40 text-white" : "bg-white border-[#E2E8F0] text-[#172033]";

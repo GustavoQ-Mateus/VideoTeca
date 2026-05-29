@@ -4,7 +4,10 @@ import { AppShell } from "@/components/layout/AppShell";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { LOANS, FILMS } from "@/lib/mock-data";
+import type { FilmRecord, LoanRecord } from "@/lib/types";
+
+const LOANS: LoanRecord[] = [];
+const FILMS: FilmRecord[] = [];
 import { useToast } from "@/components/providers/ToastProvider";
 import { Film, Plus, Trash2 } from "lucide-react";
 

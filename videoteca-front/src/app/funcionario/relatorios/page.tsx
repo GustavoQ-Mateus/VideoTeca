@@ -1,6 +1,10 @@
 "use client";
 import { AppShell } from "@/components/layout/AppShell";
-import { REPORT_CHARTS } from "@/lib/mock-data";
+const REPORT_CHARTS = {
+  topBorrowed: [] as { name: string; value: number }[],
+  byGenre:     [] as { name: string; value: number }[],
+  roomUsage:   [] as { name: string; value: number }[],
+};
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 
 const STAFF = { name: "Carla Nogueira", course: "Funcionária" };

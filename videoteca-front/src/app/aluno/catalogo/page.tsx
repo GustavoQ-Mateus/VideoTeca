@@ -1,10 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { FILMS, FilmRecord } from "@/lib/mock-data";
+import { fetchCatalogFilms } from "@/lib/api";
+import type { FilmRecord } from "@/lib/types";
 import {
   Search, SlidersHorizontal, ChevronDown, Film,
   Clock, MapPin, X, BookmarkPlus, Play,
@@ -20,7 +21,6 @@ function FilmPreview({ film, onClose }: { film: FilmRecord; onClose: () => void 
       className="split-panel h-full flex flex-col motion-right"
       aria-label="Detalhes do filme"
     >
-      {/* Cover strip */}
       <div className="relative bg-gradient-to-br from-[#003A70] to-[#0066B3] h-40 flex-shrink-0">
         <div className="absolute inset-0 flex items-center justify-center">
           <Film className="w-12 h-12 text-white/10" aria-hidden />
@@ -35,7 +35,6 @@ function FilmPreview({ film, onClose }: { film: FilmRecord; onClose: () => void 
       </div>
 
       <div className="flex-1 overflow-y-auto p-5 space-y-5">
-        {/* Title + badge */}
         <div>
           <Badge status={film.status} />
           <h2 className="text-lg font-bold text-[#172033] mt-2 leading-snug">{film.title}</h2>
@@ -44,18 +43,17 @@ function FilmPreview({ film, onClose }: { film: FilmRecord; onClose: () => void 
           )}
         </div>
 
-        {/* Meta */}
         <dl className="space-y-2 text-sm">
           {[
-            { label: "Diretor",      value: film.director },
-            { label: "Ano",          value: film.year },
-            { label: "Gênero",       value: film.genre },
-            { label: "Duração",      value: film.duration },
-            { label: "Idioma",       value: film.language },
-            { label: "Legenda",      value: film.subtitles ?? "—" },
-            { label: "Mídia",        value: film.media },
-            { label: "Localização",  value: film.location },
-            { label: "Classificação",value: film.rating },
+            { label: "Diretor",       value: film.director },
+            { label: "Ano",           value: film.year },
+            { label: "Gênero",        value: film.genre },
+            { label: "Duração",       value: film.duration },
+            { label: "Idioma",        value: film.language },
+            { label: "Legenda",       value: film.subtitles ?? "—" },
+            { label: "Mídia",         value: film.media },
+            { label: "Localização",   value: film.location },
+            { label: "Classificação", value: film.rating },
           ].map(({ label, value }) => (
             <div key={label} className="flex justify-between items-baseline gap-4">
               <dt className="text-xs text-[#667085] flex-shrink-0">{label}</dt>
@@ -64,7 +62,6 @@ function FilmPreview({ film, onClose }: { film: FilmRecord; onClose: () => void 
           ))}
         </dl>
 
-        {/* Synopsis */}
         {film.synopsis && (
           <div>
             <p className="section-label mb-1.5">Sinopse</p>
@@ -72,7 +69,6 @@ function FilmPreview({ film, onClose }: { film: FilmRecord; onClose: () => void 
           </div>
         )}
 
-        {/* Cast */}
         {film.cast && (
           <div>
             <p className="section-label mb-1.5">Elenco</p>
@@ -81,7 +77,6 @@ function FilmPreview({ film, onClose }: { film: FilmRecord; onClose: () => void 
         )}
       </div>
 
-      {/* Actions */}
       <div className="border-t border-[#E2E8F0] p-4 flex gap-2">
         <Button className="flex-1 gap-2" disabled={film.status !== "available"}>
           <Play className="w-3.5 h-3.5" aria-hidden />
@@ -100,6 +95,7 @@ function FilmPreview({ film, onClose }: { film: FilmRecord; onClose: () => void 
 }
 
 export default function StudentCatalog() {
+  const [films,          setFilms]          = useState<FilmRecord[]>([]);
   const [query,          setQuery]          = useState("");
   const [selectedGenre,  setSelectedGenre]  = useState("Todos");
   const [selectedStatus, setSelectedStatus] = useState("Todos");
@@ -107,7 +103,11 @@ export default function StudentCatalog() {
   const [sort,           setSort]           = useState("recentes");
   const [preview,        setPreview]        = useState<FilmRecord | null>(null);
 
-  const filtered = FILMS.filter(f => {
+  useEffect(() => {
+    fetchCatalogFilms().then(setFilms);
+  }, []);
+
+  const filtered = films.filter(f => {
     const q = query.toLowerCase();
     const matchQuery  = !q || f.title.toLowerCase().includes(q) || f.director.toLowerCase().includes(q);
     const matchGenre  = selectedGenre  === "Todos" || f.genre === selectedGenre;
@@ -127,7 +127,6 @@ export default function StudentCatalog() {
   return (
     <AppShell role="aluno" title="Catálogo de Filmes" user={{ name: "Ana Clara Mendes", course: "Cinema e Audiovisual" }}>
 
-      {/* ── Search bar ── */}
       <div className="mb-5 motion-up">
         <div className="flex gap-2">
           <div className="relative flex-1">
@@ -144,9 +143,7 @@ export default function StudentCatalog() {
         </div>
       </div>
 
-      {/* ── Filters row ── */}
       <div className="flex flex-wrap items-center gap-2 mb-5 motion-up stagger-1">
-        {/* Genre chips */}
         <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filtrar por gênero">
           {GENRES.map(g => (
             <button
@@ -197,15 +194,11 @@ export default function StudentCatalog() {
         </div>
       </div>
 
-      {/* ── Result count ── */}
       <p className="text-xs text-[#667085] mb-4">
         <span className="font-semibold text-[#172033]">{filtered.length}</span> título{filtered.length !== 1 ? "s" : ""} encontrado{filtered.length !== 1 ? "s" : ""}
       </p>
 
-      {/* ── Split layout: list + preview ── */}
       <div className="split-layout -mx-4 sm:-mx-6 lg:mx-0 border-t border-[#E2E8F0]">
-
-        {/* Film list */}
         <div className="split-main px-4 sm:px-6 lg:px-0 lg:pr-6 py-4">
           {filtered.length > 0 ? (
             <ul className="divide-y divide-[#E2E8F0]" role="list">
@@ -219,18 +212,15 @@ export default function StudentCatalog() {
                     aria-pressed={preview?.id === film.id}
                     aria-label={`Ver detalhes de ${film.title}`}
                   >
-                    {/* Film thumbnail */}
                     <div className="w-8 h-11 bg-gradient-to-b from-[#003A70] to-[#0066B3] rounded-[6px] flex items-center justify-center flex-shrink-0">
                       <Film className="w-3.5 h-3.5 text-white/30" aria-hidden />
                     </div>
-                    {/* Info */}
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-[#172033] text-sm leading-snug truncate">{film.title}</p>
                       <p className="text-xs text-[#667085] mt-0.5">
                         {film.director} · {film.year} · {film.genre}
                       </p>
                     </div>
-                    {/* Meta right */}
                     <div className="flex items-center gap-3 flex-shrink-0">
                       <span className="text-xs text-[#667085] hidden sm:inline">{film.media}</span>
                       <Badge status={film.status} />
@@ -251,12 +241,10 @@ export default function StudentCatalog() {
           )}
         </div>
 
-        {/* Preview panel */}
         {preview && (
           <FilmPreview film={preview} onClose={() => setPreview(null)} />
         )}
 
-        {/* Empty right panel placeholder */}
         {!preview && (
           <div className="split-panel hidden lg:flex flex-col items-center justify-center text-center p-8 gap-3">
             <Film className="w-10 h-10 text-[#E2E8F0]" aria-hidden />

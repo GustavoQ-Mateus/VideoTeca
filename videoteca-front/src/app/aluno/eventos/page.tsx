@@ -1,13 +1,14 @@
 "use client";
 import { useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
-import { EVENTS } from "@/lib/mock-data";
+import type { EventRecord } from "@/lib/types";
 import { EventCard } from "@/components/ui/EventCard";
 import { Drawer } from "@/components/ui/Drawer";
 import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
 
 const STUDENT = { name: "Ana Clara Mendes", course: "Cinema e Audiovisual" };
+const EVENTS: EventRecord[] = [];
 
 export default function AlunoEventosPage() {
   const [filter, setFilter] = useState("todos");

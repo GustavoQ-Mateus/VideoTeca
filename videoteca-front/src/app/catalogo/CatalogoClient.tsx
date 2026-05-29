@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Search, Film, SlidersHorizontal, Star, Info } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import type { FilmRecord } from "@/lib/mock-data";
+import type { FilmRecord } from "@/lib/types";
 
 const GENRES = ["Todos", "Drama", "Comédia", "Thriller", "Documentário", "Animação"];
 
