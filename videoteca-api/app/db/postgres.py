@@ -6,7 +6,16 @@ _pool: asyncpg.Pool | None = None
 
 async def init_pool():
     global _pool
-    _pool = await asyncpg.create_pool(settings.database_url, min_size=2, max_size=10)
+    dsn = settings.database_url
+    is_supabase = "supabase.co" in dsn or "supabase.com" in dsn
+    # PgBouncer (Supabase pooler) does not support asyncpg prepared statements.
+    _pool = await asyncpg.create_pool(
+        dsn,
+        min_size=2,
+        max_size=10,
+        ssl="require" if is_supabase else None,
+        statement_cache_size=0 if is_supabase else None,
+    )
 
 
 async def close_pool():
