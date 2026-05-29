@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.db import postgres
-from app.routers import catalog
+from app.routers import auth, catalog, events, professor, staff, student
 
 
 @asynccontextmanager
@@ -36,4 +36,9 @@ async def health():
     return {"status": "ok"}
 
 
-app.include_router(catalog.router, prefix="/api/v1/catalog", tags=["catalog"])
+app.include_router(auth.router,      prefix="/api/v1/auth",      tags=["auth"])
+app.include_router(catalog.router,   prefix="/api/v1/catalog",   tags=["catalog"])
+app.include_router(events.router,    prefix="/api/v1/events",    tags=["events"])
+app.include_router(student.router,   prefix="/api/v1/student",   tags=["student"])
+app.include_router(professor.router, prefix="/api/v1/professor", tags=["professor"])
+app.include_router(staff.router,     prefix="/api/v1/staff",     tags=["staff"])

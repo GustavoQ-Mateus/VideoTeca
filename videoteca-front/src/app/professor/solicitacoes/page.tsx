@@ -1,29 +1,30 @@
 "use client";
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Badge } from "@/components/ui/Badge";
 import { DataTable, Column } from "@/components/ui/DataTable";
+import { professor as api } from "@/lib/api";
+import { getUser } from "@/lib/auth";
 
-const PROFESSOR = { name: "Carlos Melo", course: "Jornalismo" };
-
-type Row = { id: number; type: string; title: string; discipline: string; class: string; date: string; status: string; notes: string };
-const PROFESSOR_REQUESTS: Row[] = [];
+type Row = { id: number; request_type: string; payload: any; status: string; staff_notes: string; created_at: string };
 
 const columns: Column<Row>[] = [
-  { key: "t", header: "Tipo", render: (r) => (r.type === "filme" ? "Filme" : "Sala") },
-  { key: "title", header: "Item", render: (r) => r.title },
-  { key: "discipline", header: "Disciplina", render: (r) => r.discipline },
-  { key: "class", header: "Turma", render: (r) => r.class },
-  { key: "date", header: "Data", render: (r) => new Date(r.date).toLocaleDateString("pt-BR") },
-  { key: "s", header: "Status", render: (r) => <Badge status={r.status} /> },
+  { key: "t",    header: "Tipo",  render: r => r.request_type === "film" ? "Filme" : "Sala" },
+  { key: "item", header: "Item",  render: r => r.payload?.film_title ?? r.payload?.room_name ?? "—" },
+  { key: "date", header: "Data",  render: r => new Date(r.created_at).toLocaleDateString("pt-BR") },
+  { key: "note", header: "Obs.", render: r => r.staff_notes ?? "—" },
+  { key: "s",    header: "Status", render: r => <Badge status={r.status} /> },
 ];
 
 export default function ProfessorSolicitacoesPage() {
+  const user = getUser();
+  const [rows, setRows] = useState<Row[]>([]);
+
+  useEffect(() => { api.requests().then(d => d && setRows(d)); }, []);
+
   return (
-    <AppShell role="professor" title="Minhas solicitações" user={PROFESSOR}>
-      <DataTable columns={columns} data={PROFESSOR_REQUESTS} rowKey={(r) => r.id} />
-      <p className="text-sm text-[#667085] mt-4">
-        Observações da equipe aparecem no detalhamento interno (mock). Status: em análise, aprovada, recusada.
-      </p>
+    <AppShell role="professor" title="Minhas Solicitações" user={{ name: user?.name ?? "", course: user?.course ?? "" }}>
+      <DataTable columns={columns} data={rows} emptyMessage="Nenhuma solicitação ainda" />
     </AppShell>
   );
 }

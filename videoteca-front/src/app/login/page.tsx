@@ -2,11 +2,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Clapperboard, Eye, EyeOff, ArrowLeft, Film, Calendar, Users, BookOpen } from "lucide-react";
+import { apiLogin } from "@/lib/api";
+import { setSession, roleHome } from "@/lib/auth";
 
 const ROLES = [
-  { id: "aluno",       label: "Aluno",       href: "/aluno",       desc: "Reservas, catálogo e eventos" },
-  { id: "professor",   label: "Professor",   href: "/professor",   desc: "Solicitações e salas" },
-  { id: "funcionario", label: "Funcionário", href: "/funcionario", desc: "Gestão e operações" },
+  { id: "aluno",       label: "Aluno",       desc: "Reservas, catálogo e eventos" },
+  { id: "professor",   label: "Professor",   desc: "Solicitações e salas" },
+  { id: "funcionario", label: "Funcionário", desc: "Gestão e operações" },
 ] as const;
 
 type RoleId = typeof ROLES[number]["id"];
@@ -26,13 +28,25 @@ export default function LoginPage() {
 
   const selected = ROLES.find(r => r.id === role)!;
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
     setLoading(true);
-    await new Promise(r => setTimeout(r, 1200));
-    setLoading(false);
-    window.location.href = selected.href;
+
+    const form = new FormData(e.currentTarget);
+    const login    = (form.get("matricula") as string).trim();
+    const password = form.get("senha") as string;
+
+    try {
+      const data = await apiLogin(login, password, role);
+      if (!data) throw new Error("Credenciais inválidas");
+      setSession(data.token, data.user);
+      window.location.href = roleHome(data.user.role);
+    } catch (err: any) {
+      setError(err.message ?? "Credenciais inválidas");
+    } finally {
+      setLoading(false);
+    }
   }
 
   const fieldLabel = role === "professor"
@@ -51,7 +65,6 @@ export default function LoginPage() {
         <div className="absolute inset-0" aria-hidden>
           <div className="absolute top-1/4 -left-20 w-80 h-80 bg-[#0066B3]/40 rounded-full blur-3xl" />
           <div className="absolute bottom-1/3 right-0 w-64 h-64 bg-[#E7472E]/10 rounded-full blur-3xl" />
-          {/* Film strip */}
           <div className="absolute top-0 right-0 bottom-0 w-16 flex flex-col gap-1 opacity-[0.04] pointer-events-none">
             {Array.from({ length: 30 }).map((_, i) => (
               <div key={i} className="h-10 bg-white flex-shrink-0 mx-3 rounded-sm" />
@@ -60,7 +73,6 @@ export default function LoginPage() {
         </div>
 
         <div className="relative flex flex-col h-full p-10">
-          {/* Logo */}
           <div className="flex items-center gap-2.5 mb-auto">
             <div className="w-8 h-8 bg-white/15 rounded-[10px] flex items-center justify-center">
               <Clapperboard className="w-4 h-4 text-white" aria-hidden />
@@ -69,7 +81,6 @@ export default function LoginPage() {
             <span className="text-sm text-white/40">Unifor</span>
           </div>
 
-          {/* Hero */}
           <div className="mb-auto">
             <h1 className="text-3xl xl:text-4xl font-bold text-white leading-tight mb-4">
               Cinema, cultura e<br />
@@ -81,7 +92,6 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Stats grid */}
           <div className="grid grid-cols-2 gap-4">
             {STATS.map(({ icon: Icon, value, label }) => (
               <div key={label} className="flex items-center gap-3">
@@ -107,14 +117,12 @@ export default function LoginPage() {
       <div className="flex-1 flex flex-col items-center justify-center p-6 bg-[#F5F7FA]">
         <div className="w-full max-w-sm">
 
-          {/* Back */}
           <Link href="/"
             className="inline-flex items-center gap-1.5 text-[#667085] hover:text-[#172033] text-sm mb-8 transition-colors focus-visible:outline-none focus-visible:underline">
             <ArrowLeft className="w-4 h-4" aria-hidden />
             Início
           </Link>
 
-          {/* Mobile logo */}
           <div className="flex items-center gap-2 mb-8 lg:hidden">
             <div className="w-8 h-8 bg-[#003A70] rounded-[10px] flex items-center justify-center">
               <Clapperboard className="w-4 h-4 text-white" aria-hidden />
@@ -128,7 +136,6 @@ export default function LoginPage() {
             Selecione seu perfil e acesse o sistema.
           </p>
 
-          {/* Role selector */}
           <fieldset className="mb-6">
             <legend className="section-label mb-2">Perfil de acesso</legend>
             <div className="grid grid-cols-3 gap-2">
@@ -151,7 +158,6 @@ export default function LoginPage() {
             <p className="text-[11px] text-[#667085] mt-2">{selected.desc}</p>
           </fieldset>
 
-          {/* Form fields */}
           <form onSubmit={handleSubmit} noValidate className="space-y-4">
             <div>
               <label htmlFor="matricula" className="block text-sm font-medium text-[#172033] mb-1.5">
@@ -159,6 +165,7 @@ export default function LoginPage() {
               </label>
               <input
                 id="matricula"
+                name="matricula"
                 type="text"
                 required
                 autoComplete="username"
@@ -175,6 +182,7 @@ export default function LoginPage() {
               <div className="relative">
                 <input
                   id="senha"
+                  name="senha"
                   type={showPassword ? "text" : "password"}
                   required
                   autoComplete="current-password"

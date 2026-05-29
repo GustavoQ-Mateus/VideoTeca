@@ -1,78 +1,62 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Select } from "@/components/ui/Select";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
-import type { RoomRecord, FilmRecord } from "@/lib/types";
-
-const ROOMS: RoomRecord[] = [];
-const FILMS: FilmRecord[] = [];
 import { useToast } from "@/components/providers/ToastProvider";
-
-const PROFESSOR = { name: "Carlos Melo", course: "Jornalismo" };
-
-const DAYS = ["Seg 19", "Ter 20", "Qua 21", "Qui 22", "Sex 23"];
+import { professor as api, staff } from "@/lib/api";
+import { getUser } from "@/lib/auth";
 
 export default function SolicitarSalaPage() {
+  const user = getUser();
   const { toast } = useToast();
-  const [day, setDay] = useState(DAYS[0]);
+  const [rooms,   setRooms]   = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => { staff.rooms().then(d => d && setRooms(d)); }, []);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form     = new FormData(e.currentTarget);
+    const room_id  = Number(form.get("room_id"));
+    const starts_at = form.get("starts_at") as string;
+    const ends_at   = form.get("ends_at") as string;
+    const title     = form.get("title") as string;
+    const notes     = form.get("notes") as string;
+
+    if (!room_id || !starts_at || !ends_at || !title) return;
+    setLoading(true);
+    try {
+      await api.requestRoom({ room_id, starts_at, ends_at, title, notes });
+      toast({ title: "Solicitação enviada", description: "A Videoteca analisará e responderá.", variant: "success" });
+      formRef.current?.reset();
+    } catch (err: any) {
+      toast({ title: "Erro", description: err.message, variant: "error" });
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
-    <AppShell role="professor" title="Solicitar sala de exibição" user={PROFESSOR}>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white rounded-[18px] border border-[#E2E8F0] p-6">
-          <h2 className="font-semibold text-[#172033] mb-4">Disponibilidade (mock)</h2>
-          <div className="flex flex-wrap gap-2 mb-6">
-            {DAYS.map((d) => (
-              <button
-                key={d}
-                type="button"
-                onClick={() => setDay(d)}
-                className={`px-3 py-2 rounded-[10px] text-sm font-medium border transition-colors ${
-                  day === d ? "border-[#0066B3] bg-[#E8F2FC] text-[#0066B3]" : "border-[#E2E8F0] text-[#667085] hover:border-[#0066B3]"
-                }`}
-              >
-                {d}
-              </button>
-            ))}
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-            {["08h", "10h", "14h", "16h", "19h"].map((h) => (
-              <button key={h} type="button" className="py-3 rounded-[10px] border border-[#E2E8F0] hover:border-[#0066B3] bg-[#F5F7FA] hover:bg-white transition-colors">
-                {h}
-              </button>
-            ))}
-          </div>
+    <AppShell role="professor" title="Solicitar sala de exibição" user={{ name: user?.name ?? "", course: user?.course ?? "" }}>
+      <form ref={formRef} onSubmit={handleSubmit} className="max-w-2xl bg-white rounded-[18px] border border-[#E2E8F0] p-6 space-y-4">
+        <Select name="room_id" label="Sala" required defaultValue="">
+          <option value="" disabled>Selecione…</option>
+          {rooms.map(r => (
+            <option key={r.id} value={r.id}>{r.name} — capacidade {r.capacity}</option>
+          ))}
+        </Select>
+        <Input name="title" label="Título / Finalidade" required placeholder="Ex.: Exibição para Jornalismo Investigativo" />
+        <div className="grid grid-cols-2 gap-4">
+          <Input name="starts_at" label="Início" type="datetime-local" required />
+          <Input name="ends_at"   label="Fim"    type="datetime-local" required />
         </div>
-        <div className="bg-white rounded-[18px] border border-[#E2E8F0] p-6 space-y-4">
-          <Select label="Sala" required>
-            {ROOMS.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.name} — {r.capacity} lugares
-              </option>
-            ))}
-          </Select>
-          <Select label="Filme relacionado" required>
-            {FILMS.map((f) => (
-              <option key={f.id} value={f.id}>
-                {f.title}
-              </option>
-            ))}
-          </Select>
-          <Input label="Público estimado" type="number" min={1} defaultValue={35} />
-          <Input label="Horário" placeholder="Ex.: 19h00" />
-          <Textarea label="Descrição da atividade" rows={4} required />
-          <Button
-            onClick={() =>
-              toast({ title: "Solicitação registrada", description: "Aguarde análise da Videoteca.", variant: "success" })
-            }
-          >
-            Enviar solicitação
-          </Button>
-        </div>
-      </div>
+        <Textarea name="notes" label="Observações" rows={3} placeholder="Opcional" />
+        <Button type="submit" disabled={loading}>{loading ? "Enviando..." : "Enviar solicitação"}</Button>
+      </form>
     </AppShell>
   );
 }

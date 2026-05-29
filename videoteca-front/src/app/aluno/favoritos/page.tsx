@@ -1,43 +1,40 @@
 "use client";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
-import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Heart } from "lucide-react";
-import Link from "next/link";
-
-const STUDENT = { name: "Ana Clara Mendes", course: "Cinema e Audiovisual" };
-
-const FAVORITES: { id: number; filmId: number; title: string; year: number; status: string }[] = [];
+import { student as api } from "@/lib/api";
+import { getUser } from "@/lib/auth";
 
 export default function FavoritosPage() {
+  const user = getUser();
+  const [favorites, setFavorites] = useState<any[]>([]);
+
+  useEffect(() => { api.favorites().then(d => d && setFavorites(d)); }, []);
+
   return (
-    <AppShell role="aluno" title="Favoritos" user={STUDENT}>
+    <AppShell role="aluno" title="Favoritos" user={{ name: user?.name ?? "", course: user?.course ?? "" }}>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-4">
-          <h2 className="font-semibold text-[#172033]">Filmes salvos</h2>
-          {FAVORITES.length === 0 && (
-            <div className="py-16 text-center text-[#667085]">
-              <Heart className="w-8 h-8 mx-auto mb-2 opacity-25" aria-hidden />
-              <p className="text-sm">Nenhum favorito salvo ainda.</p>
+        {favorites.map(f => (
+          <Link key={f.id} href={`/aluno/catalogo/${f.id}`}
+            className="bg-white rounded-[14px] border border-[#E2E8F0] p-4 flex gap-4 hover:border-[#0066B3]/40 transition-colors">
+            <div className="w-12 h-16 bg-gradient-to-b from-[#003A70] to-[#0066B3] rounded-[8px] flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-[#172033] text-sm truncate">{f.title}</p>
+              <p className="text-xs text-[#667085]">{f.director} · {f.year}</p>
+              <p className="text-xs text-[#667085] mt-1">{f.genre}</p>
+              <div className="mt-2"><Badge status={f.status} /></div>
             </div>
-          )}
-          {FAVORITES.map((f) => (
-            <div key={f.id} className="flex gap-4 p-4 rounded-[16px] border border-[#E2E8F0] bg-white items-center">
-              <div className="w-14 h-20 rounded-[10px] bg-gradient-to-b from-[#0066B3] to-[#003A70] flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-[#172033]">{f.title}</p>
-                <p className="text-xs text-[#667085]">{f.year}</p>
-                <Badge status={f.status} className="mt-2" />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Link href={`/aluno/catalogo/${f.filmId}`}>
-                  <Button size="sm" variant="outline">Detalhes</Button>
-                </Link>
-                <Button size="sm" variant="ghost" className="text-red-600">Remover</Button>
-              </div>
-            </div>
-          ))}
-        </div>
+          </Link>
+        ))}
+        {favorites.length === 0 && (
+          <div className="col-span-3 py-16 text-center text-[#667085]">
+            <Heart className="w-10 h-10 mx-auto mb-3 opacity-20" aria-hidden />
+            <p className="text-sm">Nenhum favorito ainda</p>
+            <p className="text-xs mt-1">Explore o catálogo e salve seus títulos preferidos</p>
+          </div>
+        )}
       </div>
     </AppShell>
   );
