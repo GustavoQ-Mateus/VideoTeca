@@ -64,11 +64,15 @@ export function FilmDetailView({ film, mode, backHref, breadcrumbItems, relatedF
             className={`relative rounded-[20px] overflow-hidden border shadow-lg ${avMode ? "border-white/10" : "border-[#E2E8F0]"}`}
             style={{ aspectRatio: "2/3" }}
           >
-            <div className="absolute inset-0 bg-gradient-to-b from-[#003A70] to-[#0066B3] flex flex-col items-center justify-center p-6 text-center">
-              <Film className="w-16 h-16 text-white/25 mb-3" aria-hidden />
-              <p className="text-white font-bold text-lg leading-tight">{film.title}</p>
-              <p className="text-white/60 text-sm mt-2">{film.year}</p>
-            </div>
+            {film.cover ? (
+              <img src={film.cover} alt={`Capa de ${film.title}`} className="absolute inset-0 w-full h-full object-cover" />
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-b from-[#003A70] to-[#0066B3] flex flex-col items-center justify-center p-6 text-center">
+                <Film className="w-16 h-16 text-white/25 mb-3" aria-hidden />
+                <p className="text-white font-bold text-lg leading-tight">{film.title}</p>
+                <p className="text-white/60 text-sm mt-2">{film.year}</p>
+              </div>
+            )}
             <div className="absolute top-3 left-3">
               <Badge status={film.status} />
             </div>

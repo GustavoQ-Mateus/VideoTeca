@@ -107,10 +107,14 @@ export function PublicCatalogClient({ initialFilms }: { initialFilms: FilmRecord
             >
               <Link href={`/catalogo/${film.id}`} className="block">
                 <div className="relative bg-gradient-to-br from-[#003A70] to-[#0066B3]" style={{ aspectRatio: "2/3" }}>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4">
-                    <Star className="w-10 h-10 text-white/20" aria-hidden />
-                    <p className="text-[11px] font-semibold text-white/80 text-center leading-tight">{film.title}</p>
-                  </div>
+                  {film.cover ? (
+                    <img src={film.cover} alt={`Capa de ${film.title}`} className="absolute inset-0 w-full h-full object-cover" />
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4">
+                      <Star className="w-10 h-10 text-white/20" aria-hidden />
+                      <p className="text-[11px] font-semibold text-white/80 text-center leading-tight">{film.title}</p>
+                    </div>
+                  )}
                   <div className="absolute top-2 left-2">
                     <Badge status={film.status} />
                   </div>

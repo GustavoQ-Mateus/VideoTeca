@@ -22,9 +22,13 @@ function FilmPreview({ film, onClose }: { film: FilmRecord; onClose: () => void 
       aria-label="Detalhes do filme"
     >
       <div className="relative bg-gradient-to-br from-[#003A70] to-[#0066B3] h-40 flex-shrink-0">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Film className="w-12 h-12 text-white/10" aria-hidden />
-        </div>
+        {film.cover ? (
+          <img src={film.cover} alt={`Capa de ${film.title}`} className="absolute inset-0 w-full h-full object-cover" />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Film className="w-12 h-12 text-white/10" aria-hidden />
+          </div>
+        )}
         <button
           onClick={onClose}
           className="absolute top-3 right-3 w-7 h-7 rounded-full bg-black/30 flex items-center justify-center text-white hover:bg-black/50 transition-colors focus-visible:ring-2 focus-visible:ring-white"
@@ -212,8 +216,10 @@ export default function StudentCatalog() {
                     aria-pressed={preview?.id === film.id}
                     aria-label={`Ver detalhes de ${film.title}`}
                   >
-                    <div className="w-8 h-11 bg-gradient-to-b from-[#003A70] to-[#0066B3] rounded-[6px] flex items-center justify-center flex-shrink-0">
-                      <Film className="w-3.5 h-3.5 text-white/30" aria-hidden />
+                    <div className="w-8 h-11 bg-gradient-to-b from-[#003A70] to-[#0066B3] rounded-[6px] flex items-center justify-center flex-shrink-0 overflow-hidden">
+                      {film.cover
+                        ? <img src={film.cover} alt="" className="w-full h-full object-cover" />
+                        : <Film className="w-3.5 h-3.5 text-white/30" aria-hidden />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-[#172033] text-sm leading-snug truncate">{film.title}</p>
